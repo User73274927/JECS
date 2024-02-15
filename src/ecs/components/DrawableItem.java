@@ -1,13 +1,14 @@
 package ecs.components;
 
 
-import ecs.entities.GameObject;
+import ecs.EcsComponent;
+import ecs.EcsObject;
 
-public class DrawableItem extends GameComponent {
+public class DrawableItem extends EcsComponent {
     public boolean isVisible;
     public Transform bounds;
 
-    public DrawableItem(GameObject attachedGameObject) {
-        super(attachedGameObject);
+    public DrawableItem(EcsObject attachedEcsObject) {
+        super(attachedEcsObject);
     }
 }

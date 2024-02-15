@@ -1,11 +1,11 @@
 package ecs.components;
 
-import ecs.entities.GameObject;
+import ecs.EcsObject;
 
 public class Sprite2D extends DrawableItem {
 
-    public Sprite2D(GameObject gameObject) {
-        super(gameObject);
+    public Sprite2D(EcsObject ecsObject) {
+        super(ecsObject);
     }
 
 }

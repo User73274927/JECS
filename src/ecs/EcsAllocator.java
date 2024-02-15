@@ -3,9 +3,9 @@ package ecs;
 import java.util.HashMap;
 import java.util.Set;
 
-public interface EcsAllocator<T, T1> {
+public interface EcsAllocator<T, R> {
     void allocate(T object);
     void remove(T object);
-    HashMap<Class<? extends T1>, Set<T1>> getSortedItems();
+    HashMap<Class<? extends R>, Set<R>> getSortedItems();
 }
 

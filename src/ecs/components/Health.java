@@ -1,15 +1,16 @@
 package ecs.components;
 
 
-import ecs.entities.GameObject;
+import ecs.EcsComponent;
+import ecs.EcsObject;
 
-public class Health extends GameComponent {
+public class Health extends EcsComponent {
     public boolean isAlive;
     public int health;
     public int armor;
 
-    public Health(GameObject attachedGameObject) {
-        super(attachedGameObject);
+    public Health(EcsObject attachedEcsObject) {
+        super(attachedEcsObject);
     }
 
 }

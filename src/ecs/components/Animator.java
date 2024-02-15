@@ -1,9 +1,10 @@
 package ecs.components;
 
-import ecs.entities.GameObject;
+import ecs.EcsComponent;
+import ecs.EcsObject;
 
-public class Animator extends GameComponent {
-    public Animator(GameObject attachedGameObject) {
-        super(attachedGameObject);
+public class Animator extends EcsComponent {
+    public Animator(EcsObject attachedEcsObject) {
+        super(attachedEcsObject);
     }
 }

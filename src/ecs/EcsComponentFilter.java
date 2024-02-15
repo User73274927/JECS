@@ -1,23 +1,20 @@
 package ecs;
 
 
-import ecs.components.GameComponent;
-import ecs.entities.GameObject;
-
 import java.util.*;
 import java.util.function.Predicate;
 
-public class EcsFilter implements Filter<GameObject, Class<? extends GameComponent>>, ObjectsListener {
-    private final Collection<GameObject> objectData;
-    private Set<GameObject> acceptableObjects;
+public class EcsComponentFilter implements Filter<EcsObject, Class<? extends EcsComponent>>, ContainerListener {
+    private final Collection<EcsObject> objectData;
+    private final Collection<EcsObject> acceptableObjects;
 
-    private List<Class<? extends GameComponent>> includedClasses;
-    private List<Class<? extends GameComponent>> excludedClasses;
+    private List<Class<? extends EcsComponent>> includedClasses;
+    private List<Class<? extends EcsComponent>> excludedClasses;
 
-    private Predicate<GameObject> customFilter;
+    private Predicate<EcsObject> customFilter;
     private boolean filterChanged;
 
-    public EcsFilter(Collection<GameObject> objectData) {
+    public EcsComponentFilter(Collection<EcsObject> objectData) {
         this.acceptableObjects = new HashSet<>();
         this.includedClasses = new ArrayList<>();
         this.excludedClasses = new ArrayList<>();
@@ -25,64 +22,69 @@ public class EcsFilter implements Filter<GameObject, Class<? extends GameCompone
     }
 
     @Override
-    public void onObjectAdded(GameObject object) {
+    public void onObjectAdded(EcsObject object) {
         if (isAccept(object)) {
             acceptableObjects.add(object);
         }
     }
 
     @Override
-    public void onObjectRemoved(GameObject object) {
+    public void onObjectRemoved(EcsObject object) {
         acceptableObjects.remove(object);
     }
 
-    private boolean isAccept(GameObject obj) {
+    private boolean isAccept(EcsObject obj) {
         return obj != null
                 && (containsIncludes(obj) && !containsExcludes(obj))
                 && (customFilter == null || customFilter.test(obj));
     }
 
-    private boolean containsIncludes(GameObject obj) {
+    private boolean containsIncludes(EcsObject obj) {
         return new HashSet<>(obj.getComponentTypes()).containsAll(includedClasses);
     }
 
-    private boolean containsExcludes(GameObject obj) {
+    private boolean containsExcludes(EcsObject obj) {
         return obj.getComponentTypes().stream().anyMatch(e -> excludedClasses.contains(e));
     }
 
     @Override
-    public Filter<GameObject, Class<? extends GameComponent>> filter(Predicate<GameObject> func) {
+    public Filter<EcsObject, Class<? extends EcsComponent>> filter(Predicate<EcsObject> func) {
         customFilter = func;
         filterChanged = (func != null);
         return this;
     }
 
     @Override
-    public Filter<GameObject, Class<? extends GameComponent>> include(List<Class<? extends GameComponent>> obj) {
+    public Filter<EcsObject, Class<? extends EcsComponent>> include(List<Class<? extends EcsComponent>> obj) {
         includedClasses = obj;
         filterChanged = true;
         return this;
     }
 
     @Override
-    public Filter<GameObject, Class<? extends GameComponent>> exclude(List<Class<? extends GameComponent>> obj) {
+    public Filter<EcsObject, Class<? extends EcsComponent>> exclude(List<Class<? extends EcsComponent>> obj) {
         excludedClasses = obj;
         filterChanged = true;
         return this;
     }
 
-    public Filter<GameObject, Class<? extends GameComponent>> recalculate() {
+    @Override
+    public Filter<EcsObject, Class<? extends EcsComponent>> apply() {
+        recalculate();
+        return this;
+    }
+
+    public void recalculate() {
         if (filterChanged) {
             acceptableObjects.clear();
 
-            for (GameObject obj : objectData) {
+            for (EcsObject obj : objectData) {
                 if (isAccept(obj)) {
                     acceptableObjects.add(obj);
                 }
             }
         }
         filterChanged = false;
-        return this;
     }
 
     public void clear() {
@@ -92,10 +94,14 @@ public class EcsFilter implements Filter<GameObject, Class<? extends GameCompone
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Set<GameObject> toSet() {
+    public List<EcsObject> toList() {
         recalculate();
-        return acceptableObjects;
+        return (List<EcsObject>) acceptableObjects;
+    }
+
+    public Set<EcsObject> toSet() {
+        recalculate();
+        return (Set<EcsObject>) acceptableObjects;
     }
 
 }

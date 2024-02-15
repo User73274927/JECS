@@ -1,11 +1,12 @@
 package ecs.components;
 
-import ecs.entities.GameObject;
+import ecs.EcsComponent;
+import ecs.EcsObject;
 
-public class Body extends GameComponent {
+public class Body extends EcsComponent {
     private Transform transform;
 
-    public Body(GameObject gameObject) {
-        super(gameObject);
+    public Body(EcsObject ecsObject) {
+        super(ecsObject);
     }
 }
