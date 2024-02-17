@@ -1,23 +1,22 @@
 package ecs;
 
-
 public abstract class EcsComponent {
-    private EcsObject owner;
+    private EcsObject parent;
 
-    public EcsComponent(EcsObject attachedEcsObject) {
-        this.owner = attachedEcsObject;
+    public EcsComponent(EcsObject parent) {
+        this.parent = parent;
     }
 
     public <T extends EcsComponent>T getComponent(Class<T> clazz) {
-        return owner.getComponent(clazz);
+        return parent.getComponent(clazz);
     }
 
-    public void setOwner(EcsObject owner) {
-        this.owner = owner;
+    public void setParent(EcsObject owner) {
+        this.parent = owner;
     }
 
-    public EcsObject getOwner() {
-        return owner;
+    public EcsObject getParent() {
+        return parent;
     }
 
 }

@@ -9,8 +9,8 @@ public class Health extends EcsComponent {
     public int health;
     public int armor;
 
-    public Health(EcsObject attachedEcsObject) {
-        super(attachedEcsObject);
+    public Health(EcsObject parent) {
+        super(parent);
     }
 
 }

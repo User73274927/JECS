@@ -4,8 +4,8 @@ import ecs.EcsObject;
 
 public class Sprite2D extends DrawableItem {
 
-    public Sprite2D(EcsObject ecsObject) {
-        super(ecsObject);
+    public Sprite2D(EcsObject parent) {
+        super(parent);
     }
 
 }

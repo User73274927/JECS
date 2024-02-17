@@ -8,7 +8,7 @@ public class DrawableItem extends EcsComponent {
     public boolean isVisible;
     public Transform bounds;
 
-    public DrawableItem(EcsObject attachedEcsObject) {
-        super(attachedEcsObject);
+    public DrawableItem(EcsObject parent) {
+        super(parent);
     }
 }

@@ -6,7 +6,7 @@ import ecs.EcsObject;
 public class Body extends EcsComponent {
     private Transform transform;
 
-    public Body(EcsObject ecsObject) {
-        super(ecsObject);
+    public Body(EcsObject parent) {
+        super(parent);
     }
 }

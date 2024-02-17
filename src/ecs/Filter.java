@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public interface Filter<T, I> {
-    Filter<T, I> filter(Predicate<T> func);
-    Filter<T, I> include(List<I> obj);
-    Filter<T, I> exclude(List<I> obj);
-    Filter<T, I> apply();
-    List<T> toList();
+public interface Filter<T extends Filter<T, R>, R> {
+    T filter(Predicate<R> func);
+    T apply();
+    List<R> toList();
 }

@@ -1,6 +1,10 @@
 package ecs;
 
+import ecs.components.Transform;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EcsObject {
@@ -8,12 +12,12 @@ public class EcsObject {
     private final List<Class<? extends EcsComponent>> componentTypes = new ArrayList<>();
     private final List<EcsComponent> ecsComponents = new ArrayList<>();
 
-    private EcsContainer world;
+    private EcsContainer parent;
     private boolean isActive;
     private int id;
 
-    public EcsObject() {
-
+    public EcsObject(EcsContainer parent) {
+        this.parent = parent;
     }
 
     @SuppressWarnings("unchecked")
@@ -27,10 +31,12 @@ public class EcsObject {
     }
 
     public void addComponent(EcsComponent newEcsComponent) {
+        if (newEcsComponent == null) return;
         int i = 0;
         for (EcsComponent ecsComponent : ecsComponents) {
             if (newEcsComponent.getClass() == ecsComponent.getClass()) {
                 ecsComponents.set(i, newEcsComponent);
+                parent.getObjectAllocator().getComponentAllocator().allocate(newEcsComponent);
                 return;
             }
             i++;
@@ -38,6 +44,7 @@ public class EcsObject {
         if (!componentTypes.contains(newEcsComponent.getClass())) {
             componentTypes.add(newEcsComponent.getClass());
         }
+        parent.getObjectAllocator().getComponentAllocator().allocate(newEcsComponent);
         ecsComponents.add(newEcsComponent);
     }
 
@@ -49,18 +56,30 @@ public class EcsObject {
                 break;
             }
         }
+        parent.getObjectAllocator().getComponentAllocator().eliminate(toRemove);
         ecsComponents.remove(toRemove);
-    }
-
-    public List<EcsComponent> getComponents() {
-        return ecsComponents;
-    }
-    public List<Class<? extends EcsComponent>> getComponentTypes() {
-        return componentTypes;
     }
 
     public void setActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public EcsComponent[] getComponents() {
+        EcsComponent[] components = new EcsComponent[ecsComponents.size()];
+        ecsComponents.toArray(components);
+        return components;
+    }
+
+    public List<Class<? extends EcsComponent>> getComponentTypes() {
+        return componentTypes;
+    }
+
+    public EcsContainer getParent() {
+        return parent;
     }
 
 }

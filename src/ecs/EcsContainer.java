@@ -5,16 +5,16 @@ import java.util.*;
 public class EcsContainer {
     private Set<EcsObject> container;
     private HashMap<Class<? extends EcsComponent>, Set<EcsComponent>> sortedComponents;
-    private List<ContainerListener> containerListeners;
-    private List<Filter<? extends EcsObject, ?>> filters;
+    private List<EcsContainerListener> ecsContainerListeners;
+    private List<Filter<?, ? extends EcsObject>> filters;
 
-    private EcsObjectAllocator allocator;
+    private ObjectAllocator allocator;
 
     public EcsContainer(Collection<EcsObject> container) {
         this.container = (Set<EcsObject>) container;
-        containerListeners = new ArrayList<>();
+        ecsContainerListeners = new ArrayList<>();
         filters = new ArrayList<>();
-        allocator = new EcsObjectAllocator();
+        allocator = new ObjectAllocator();
         sortedComponents = allocator.getSortedItems();
     }
 
@@ -22,15 +22,15 @@ public class EcsContainer {
         this(new HashSet<>());
     }
 
-    public void addObjectsListener(ContainerListener listener) {
+    public void addObjectsListener(EcsContainerListener listener) {
         if (listener == null) return;
-        containerListeners.add(listener);
+        ecsContainerListeners.add(listener);
     }
 
-    public void createFilter(Filter<? extends EcsObject, ?> filter) {
+    public void createFilter(Filter<?, ? extends EcsObject> filter) {
         if (filter == null) {
-            filter = new EcsComponentFilter(container);
-            containerListeners.add((EcsComponentFilter) filter);
+            filter = new EcsObjectFilter(container);
+            addObjectsListener((EcsObjectFilter) filter);
         }
         filters.add(filter);
     }
@@ -40,23 +40,33 @@ public class EcsContainer {
         allocator.allocate(object);
         container.add(object);
 
-        for (ContainerListener l : containerListeners) {
+        for (EcsContainerListener l : ecsContainerListeners) {
             l.onObjectAdded(object);
         }
     }
 
     public void removeObject(EcsObject object) {
         if (object == null) return;
-        allocator.remove(object);
+        allocator.eliminate(object);
         container.remove(object);
 
-        for (ContainerListener l : containerListeners) {
+        for (EcsContainerListener l : ecsContainerListeners) {
             l.onObjectRemoved(object);
         }
     }
 
+    public ObjectAllocator getObjectAllocator() {
+        return allocator;
+    }
+
     public Set<EcsComponent> getComponentsByClass(Class<? extends EcsComponent> clazz) {
         return sortedComponents.get(clazz);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends EcsObject>T createObject() {
+        T instance = (T) new EcsObject(this);
+        return instance;
     }
 
     public Set<EcsObject> getObjects() {

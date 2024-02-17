@@ -4,7 +4,7 @@ package ecs;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class EcsComponentFilter implements Filter<EcsObject, Class<? extends EcsComponent>>, ContainerListener {
+public class EcsObjectFilter implements Filter<EcsObjectFilter, EcsObject>, EcsContainerListener {
     private final Collection<EcsObject> objectData;
     private final Collection<EcsObject> acceptableObjects;
 
@@ -12,9 +12,10 @@ public class EcsComponentFilter implements Filter<EcsObject, Class<? extends Ecs
     private List<Class<? extends EcsComponent>> excludedClasses;
 
     private Predicate<EcsObject> customFilter;
+    private boolean onlyActiveObjects;
     private boolean filterChanged;
 
-    public EcsComponentFilter(Collection<EcsObject> objectData) {
+    public EcsObjectFilter(Collection<EcsObject> objectData) {
         this.acceptableObjects = new HashSet<>();
         this.includedClasses = new ArrayList<>();
         this.excludedClasses = new ArrayList<>();
@@ -35,6 +36,7 @@ public class EcsComponentFilter implements Filter<EcsObject, Class<? extends Ecs
 
     private boolean isAccept(EcsObject obj) {
         return obj != null
+                && (!onlyActiveObjects || obj.isActive())
                 && (containsIncludes(obj) && !containsExcludes(obj))
                 && (customFilter == null || customFilter.test(obj));
     }
@@ -48,33 +50,37 @@ public class EcsComponentFilter implements Filter<EcsObject, Class<? extends Ecs
     }
 
     @Override
-    public Filter<EcsObject, Class<? extends EcsComponent>> filter(Predicate<EcsObject> func) {
+    public EcsObjectFilter filter(Predicate<EcsObject> func) {
         customFilter = func;
         filterChanged = (func != null);
         return this;
     }
 
-    @Override
-    public Filter<EcsObject, Class<? extends EcsComponent>> include(List<Class<? extends EcsComponent>> obj) {
+    public EcsObjectFilter include(List<Class<? extends EcsComponent>> obj) {
         includedClasses = obj;
         filterChanged = true;
         return this;
     }
 
-    @Override
-    public Filter<EcsObject, Class<? extends EcsComponent>> exclude(List<Class<? extends EcsComponent>> obj) {
+    public EcsObjectFilter exclude(List<Class<? extends EcsComponent>> obj) {
         excludedClasses = obj;
         filterChanged = true;
         return this;
     }
 
+    public EcsObjectFilter active(boolean active) {
+        filterChanged = (active != onlyActiveObjects);
+        onlyActiveObjects = active;
+        return this;
+    }
+
     @Override
-    public Filter<EcsObject, Class<? extends EcsComponent>> apply() {
+    public EcsObjectFilter apply() {
         recalculate();
         return this;
     }
 
-    public void recalculate() {
+    private void recalculate() {
         if (filterChanged) {
             acceptableObjects.clear();
 

@@ -8,7 +8,7 @@ public class Transform extends EcsComponent {
     public float width, height;
     public float rotation;
 
-    public Transform(EcsObject ecsObject) {
-        super(ecsObject);
+    public Transform(EcsObject parent) {
+        super(parent);
     }
 }
