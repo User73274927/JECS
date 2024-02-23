@@ -1,10 +1,6 @@
 package ecs;
 
-import ecs.components.Transform;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class EcsObject {
@@ -18,6 +14,7 @@ public class EcsObject {
 
     public EcsObject(EcsContainer parent) {
         this.parent = parent;
+        setActive(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -61,6 +58,14 @@ public class EcsObject {
     }
 
     public void setActive(boolean isActive) {
+        if (isActive != this.isActive) {
+            if (isActive) {
+                parent.enableObject(this);
+            }
+            else {
+                parent.disableObject(this);
+            }
+        }
         this.isActive = isActive;
     }
 

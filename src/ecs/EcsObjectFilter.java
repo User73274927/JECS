@@ -57,13 +57,13 @@ public class EcsObjectFilter implements Filter<EcsObjectFilter, EcsObject>, EcsC
     }
 
     public EcsObjectFilter include(List<Class<? extends EcsComponent>> obj) {
-        includedClasses = obj;
+        includedClasses.addAll(obj);
         filterChanged = true;
         return this;
     }
 
     public EcsObjectFilter exclude(List<Class<? extends EcsComponent>> obj) {
-        excludedClasses = obj;
+        excludedClasses.addAll(obj);
         filterChanged = true;
         return this;
     }
@@ -93,10 +93,21 @@ public class EcsObjectFilter implements Filter<EcsObjectFilter, EcsObject>, EcsC
         filterChanged = false;
     }
 
-    public void clear() {
-        includedClasses.clear();
-        excludedClasses.clear();
+    public EcsObjectFilter clear() {
+        clearIncludes();
+        clearExcludes();
         customFilter = null;
+        return this;
+    }
+
+    public EcsObjectFilter clearIncludes() {
+        includedClasses.clear();
+        return this;
+    }
+
+    public EcsObjectFilter clearExcludes() {
+        excludedClasses.clear();
+        return this;
     }
 
     @Override
